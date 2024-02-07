@@ -76,7 +76,7 @@ docs/_build/
 target/
 
 # Jupyter Notebook
-.ipynb_checkpoints
+
 
 # IPython
 profile_default/
@@ -164,3 +164,4 @@ cython_debug/
 *.json
 *.png
 fonts
+.ipynb_checkpoints
