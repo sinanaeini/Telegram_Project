@@ -12,3 +12,6 @@ def read_file(path=(data_dir / 'stop_word.txt')):
     with open(path) as f:
         file = f.read()
     return file
+
+
+print('hi')
