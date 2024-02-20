@@ -1,4 +1,5 @@
 import hazm
+from collections import Counter, defaultdict
 import json
 from wordcloud import WordCloud
 # import arabic_reshaper
@@ -19,7 +20,38 @@ class ChatResults:
             stop_words = open(data_dir / 'stop_word.txt')
             stop_words = stop_words.readlines()
             stop_words = map(str.strip, stop_words)
-            self.stop_words = list(map(self.normalizer.normalize, stop_words))
+            self.stop_words = set(map(self.normalizer.normalize, stop_words))
+
+    @staticmethod
+    def rebuild_messages(messages):
+        all_messages = ''
+        for item in messages:
+            if isinstance(item, str):
+                all_messages += item
+                break
+            elif isinstance(item, dict):
+                all_messages += item['text']
+                break
+        return all_messages
+
+    @staticmethod
+    def check(messages):
+        if '?' in messages or '؟' in messages:
+            return True
+
+    def top_five(self):
+        is_question = defaultdict(bool)
+        top_users = []
+        for item in self.messages['messages']:
+            if not isinstance(item['text'], str):
+                item['text'] = self.rebuild_messages(item['text'])
+            if self.check(item['text']):
+                is_question[item['id']] = True
+            if 'reply_to_message_id' in item and (
+                is_question[item['reply_to_message_id']]
+            ):
+                top_users.append(item['from'])
+        return dict(Counter(top_users).most_common(2))
 
     def word_cloud(self, output_dir: Union[Path, str]):
         all_messages = ''
@@ -45,5 +77,6 @@ class ChatResults:
 
 if __name__ == '__main__':
     chatresults = ChatResults(data_dir/'result.json')
-    chatresults.word_cloud(data_dir/'output.png')
+    print(chatresults.top_five())
+#    chatresults.word_cloud(data_dir/'output.png')
 print('done!')
