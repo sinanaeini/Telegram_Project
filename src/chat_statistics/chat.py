@@ -79,4 +79,3 @@ if __name__ == '__main__':
     chatresults = ChatResults(data_dir/'result.json')
     print(chatresults.top_five())
 #    chatresults.word_cloud(data_dir/'output.png')
-print('done!')
